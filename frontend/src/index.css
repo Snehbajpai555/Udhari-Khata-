@@ -17,12 +17,13 @@ body {
   font-family: "Inter", "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  background: #f7f6fc;
+  background: #0c0b18;
+  color-scheme: dark;
 }
 
 ::selection {
-  background: #ded7ff;
-  color: #201e35;
+  background: #493c80;
+  color: #ffffff;
 }
 
 :focus-visible {

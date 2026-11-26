@@ -35,7 +35,7 @@ const Login = () => {
     <AuthLayout mode="login">
       <form className="space-y-5" onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="login-identity" className="mb-2 block text-sm font-semibold text-[#343148]">
+          <label htmlFor="login-identity" className="mb-2 block text-sm font-semibold text-[#e2dfeb]">
             Email or mobile number
           </label>
           <input
@@ -45,15 +45,15 @@ const Login = () => {
             autoComplete="username"
             required
             placeholder="you@business.com or mobile number"
-            className="w-full rounded-xl border border-[#e6e4ed] bg-[#fcfbfe] px-4 py-3.5 text-sm text-[#201e35] outline-none transition placeholder:text-[#aaa7b5] focus:border-[#8d7aff] focus:bg-white focus:ring-4 focus:ring-[#7257ff]/10"
+            className="w-full rounded-xl border border-[#3b3752] bg-[#201e36] px-4 py-3.5 text-sm text-white outline-none transition placeholder:text-[#aaa6bb] focus:border-[#8d7aff] focus:bg-[#24213e] focus:ring-4 focus:ring-[#7257ff]/20"
           />
         </div>
         <div>
           <div className="mb-2 flex items-center justify-between gap-3">
-            <label htmlFor="login-password" className="block text-sm font-semibold text-[#343148]">
+            <label htmlFor="login-password" className="block text-sm font-semibold text-[#e2dfeb]">
               Password
             </label>
-            <span className="text-xs font-medium text-[#a19dac]">Password recovery not available yet</span>
+            <span className="text-xs font-medium text-[#aaa6bb]">Password recovery not available yet</span>
           </div>
           <input
             id="login-password"
@@ -62,14 +62,14 @@ const Login = () => {
             autoComplete="current-password"
             required
             placeholder="Enter your password"
-            className="w-full rounded-xl border border-[#e6e4ed] bg-[#fcfbfe] px-4 py-3.5 text-sm text-[#201e35] outline-none transition placeholder:text-[#aaa7b5] focus:border-[#8d7aff] focus:bg-white focus:ring-4 focus:ring-[#7257ff]/10"
+            className="w-full rounded-xl border border-[#3b3752] bg-[#201e36] px-4 py-3.5 text-sm text-white outline-none transition placeholder:text-[#aaa6bb] focus:border-[#8d7aff] focus:bg-[#24213e] focus:ring-4 focus:ring-[#7257ff]/20"
           />
         </div>
 
         {message && (
           <p
             role="alert"
-            className="rounded-xl border border-[#f2d89e] bg-[#fff9e9] px-4 py-3 text-sm leading-5 text-[#785c1c]"
+            className="rounded-xl border border-[#735626] bg-[#3b2d1d] px-4 py-3 text-sm leading-5 text-[#ffdc97]"
           >
             {message}
           </p>
@@ -87,9 +87,9 @@ const Login = () => {
         </motion.button>
       </form>
 
-      <p className="mt-7 text-center text-sm text-[#777487]">
+      <p className="mt-7 text-center text-sm text-[#c2bfd0]">
         New to Udhari Khata?{' '}
-        <Link to="/signup" className="font-bold text-[#7257ff] transition hover:text-[#523ad4]">
+        <Link to="/signup" className="font-bold text-[#c9bdff] transition hover:text-white">
           Create an account
         </Link>
       </p>

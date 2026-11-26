@@ -5,7 +5,7 @@ const AuthLayout = ({ children, mode }) => {
   const isSignup = mode === 'signup'
 
   return (
-    <main className="relative grid min-h-screen overflow-hidden bg-[#f7f6fc] lg:grid-cols-[1.02fr_0.98fr]">
+    <main className="relative grid min-h-screen overflow-hidden bg-[#0c0b18] lg:grid-cols-[1.02fr_0.98fr]">
       <section className="relative hidden min-h-screen overflow-hidden bg-[#111023] px-12 py-10 text-white lg:flex lg:flex-col lg:justify-between xl:px-16">
         <div aria-hidden="true" className="auth-grid absolute inset-0 opacity-30" />
         <div aria-hidden="true" className="auth-orb absolute -right-32 top-20 h-[32rem] w-[32rem] rounded-full bg-[#7257ff]/35 blur-[110px]" />
@@ -62,49 +62,49 @@ const AuthLayout = ({ children, mode }) => {
       </section>
 
       <section className="relative flex min-h-screen items-center justify-center px-5 py-8 sm:px-8">
-        <div aria-hidden="true" className="absolute -right-28 top-0 h-72 w-72 rounded-full bg-[#dcd5ff]/60 blur-[90px] lg:hidden" />
+        <div aria-hidden="true" className="absolute -right-28 top-0 h-72 w-72 rounded-full bg-[#7257ff]/20 blur-[90px] lg:hidden" />
         <motion.div
           initial={{ opacity: 0, y: 22, scale: 0.985 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.55, ease: [0.2, 0.8, 0.2, 1] }}
           className="relative w-full max-w-[470px]"
         >
-          <Link to="/" className="mb-7 inline-flex items-center gap-2 text-sm font-semibold text-[#716d84] transition hover:text-[#7257ff] lg:hidden">
+          <Link to="/" className="mb-7 inline-flex items-center gap-2 text-sm font-semibold text-[#c2bfd0] transition hover:text-white lg:hidden">
             <span aria-hidden="true">←</span> Udhari Khata
           </Link>
 
-          <div className="rounded-[1.8rem] border border-[#eae8f1] bg-white p-6 shadow-[0_24px_80px_rgba(37,31,76,0.10)] sm:p-9">
+          <div className="rounded-[1.8rem] border border-[#302d46] bg-[#17162a] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.35)] sm:p-9">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#7257ff]">
                   {isSignup ? 'Get started' : 'Welcome back'}
                 </p>
-                <h2 className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-[#201e35]">
+                <h2 className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-white">
                   {isSignup ? 'Create your account' : 'Log in to your khata'}
                 </h2>
               </div>
-              <span className="hidden h-12 w-12 items-center justify-center rounded-2xl bg-[#f0edff] text-xl text-[#7257ff] sm:flex" aria-hidden="true">
+              <span className="hidden h-12 w-12 items-center justify-center rounded-2xl bg-[#302b50] text-xl text-[#c9bdff] sm:flex" aria-hidden="true">
                 {isSignup ? '✦' : '↗'}
               </span>
             </div>
-            <p className="mt-3 text-sm leading-6 text-[#777487]">
+            <p className="mt-3 text-sm leading-6 text-[#c2bfd0]">
               {isSignup
                 ? 'A simple starting point for more organized business records.'
                 : 'Pick up where you left off with your business records.'}
             </p>
 
-            <div className="mt-7 grid grid-cols-2 rounded-xl bg-[#f3f2f8] p-1">
+            <div className="mt-7 grid grid-cols-2 rounded-xl bg-[#201e36] p-1">
               <Link
                 to="/login"
                 aria-current={!isSignup ? 'page' : undefined}
-                className={`rounded-lg px-3 py-2.5 text-center text-sm font-semibold transition ${!isSignup ? 'bg-white text-[#342c62] shadow-sm' : 'text-[#888598] hover:text-[#342c62]'}`}
+                className={`rounded-lg px-3 py-2.5 text-center text-sm font-semibold transition ${!isSignup ? 'bg-[#393354] text-white shadow-sm' : 'text-[#b3b0c1] hover:text-white'}`}
               >
                 Log in
               </Link>
               <Link
                 to="/signup"
                 aria-current={isSignup ? 'page' : undefined}
-                className={`rounded-lg px-3 py-2.5 text-center text-sm font-semibold transition ${isSignup ? 'bg-white text-[#342c62] shadow-sm' : 'text-[#888598] hover:text-[#342c62]'}`}
+                className={`rounded-lg px-3 py-2.5 text-center text-sm font-semibold transition ${isSignup ? 'bg-[#393354] text-white shadow-sm' : 'text-[#b3b0c1] hover:text-white'}`}
               >
                 Sign up
               </Link>
@@ -113,7 +113,7 @@ const AuthLayout = ({ children, mode }) => {
             <div className="mt-7">{children}</div>
           </div>
 
-          <p className="mt-5 text-center text-xs leading-5 text-[#9692a3]">
+          <p className="mt-5 text-center text-xs leading-5 text-[#aaa6bb]">
             Your details are sent to the account service to process this request.
           </p>
         </motion.div>

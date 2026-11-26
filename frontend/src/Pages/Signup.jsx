@@ -38,7 +38,7 @@ const Signup = () => {
     <AuthLayout mode="signup">
       <form className="space-y-4" onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="signup-name" className="mb-2 block text-sm font-semibold text-[#343148]">
+          <label htmlFor="signup-name" className="mb-2 block text-sm font-semibold text-[#e2dfeb]">
             Your name
           </label>
           <input
@@ -48,12 +48,12 @@ const Signup = () => {
             autoComplete="name"
             required
             placeholder="e.g. Asha Patel"
-            className="w-full rounded-xl border border-[#e6e4ed] bg-[#fcfbfe] px-4 py-3.5 text-sm text-[#201e35] outline-none transition placeholder:text-[#aaa7b5] focus:border-[#8d7aff] focus:bg-white focus:ring-4 focus:ring-[#7257ff]/10"
+            className="w-full rounded-xl border border-[#3b3752] bg-[#201e36] px-4 py-3.5 text-sm text-white outline-none transition placeholder:text-[#aaa6bb] focus:border-[#8d7aff] focus:bg-[#24213e] focus:ring-4 focus:ring-[#7257ff]/20"
           />
         </div>
 
         <div>
-          <label htmlFor="signup-business" className="mb-2 block text-sm font-semibold text-[#343148]">
+          <label htmlFor="signup-business" className="mb-2 block text-sm font-semibold text-[#e2dfeb]">
             Business name
           </label>
           <input
@@ -63,13 +63,13 @@ const Signup = () => {
             autoComplete="organization"
             required
             placeholder="Your shop or business"
-            className="w-full rounded-xl border border-[#e6e4ed] bg-[#fcfbfe] px-4 py-3.5 text-sm text-[#201e35] outline-none transition placeholder:text-[#aaa7b5] focus:border-[#8d7aff] focus:bg-white focus:ring-4 focus:ring-[#7257ff]/10"
+            className="w-full rounded-xl border border-[#3b3752] bg-[#201e36] px-4 py-3.5 text-sm text-white outline-none transition placeholder:text-[#aaa6bb] focus:border-[#8d7aff] focus:bg-[#24213e] focus:ring-4 focus:ring-[#7257ff]/20"
           />
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label htmlFor="signup-email" className="mb-2 block text-sm font-semibold text-[#343148]">
+            <label htmlFor="signup-email" className="mb-2 block text-sm font-semibold text-[#e2dfeb]">
               Email address
             </label>
             <input
@@ -79,11 +79,11 @@ const Signup = () => {
               autoComplete="email"
               required
               placeholder="you@business.com"
-              className="w-full rounded-xl border border-[#e6e4ed] bg-[#fcfbfe] px-4 py-3.5 text-sm text-[#201e35] outline-none transition placeholder:text-[#aaa7b5] focus:border-[#8d7aff] focus:bg-white focus:ring-4 focus:ring-[#7257ff]/10"
+              className="w-full rounded-xl border border-[#3b3752] bg-[#201e36] px-4 py-3.5 text-sm text-white outline-none transition placeholder:text-[#aaa6bb] focus:border-[#8d7aff] focus:bg-[#24213e] focus:ring-4 focus:ring-[#7257ff]/20"
             />
           </div>
           <div>
-            <label htmlFor="signup-phone" className="mb-2 block text-sm font-semibold text-[#343148]">
+            <label htmlFor="signup-phone" className="mb-2 block text-sm font-semibold text-[#e2dfeb]">
               Mobile number
             </label>
             <input
@@ -93,13 +93,13 @@ const Signup = () => {
               autoComplete="tel"
               required
               placeholder="+91 98765 43210"
-              className="w-full rounded-xl border border-[#e6e4ed] bg-[#fcfbfe] px-4 py-3.5 text-sm text-[#201e35] outline-none transition placeholder:text-[#aaa7b5] focus:border-[#8d7aff] focus:bg-white focus:ring-4 focus:ring-[#7257ff]/10"
+              className="w-full rounded-xl border border-[#3b3752] bg-[#201e36] px-4 py-3.5 text-sm text-white outline-none transition placeholder:text-[#aaa6bb] focus:border-[#8d7aff] focus:bg-[#24213e] focus:ring-4 focus:ring-[#7257ff]/20"
             />
           </div>
         </div>
 
         <div>
-          <label htmlFor="signup-category" className="mb-2 block text-sm font-semibold text-[#343148]">
+          <label htmlFor="signup-category" className="mb-2 block text-sm font-semibold text-[#e2dfeb]">
             Business type
           </label>
           <select
@@ -107,7 +107,7 @@ const Signup = () => {
             name="businessType"
             defaultValue=""
             required
-            className="w-full appearance-none rounded-xl border border-[#e6e4ed] bg-[#fcfbfe] px-4 py-3.5 text-sm text-[#625f72] outline-none transition focus:border-[#8d7aff] focus:bg-white focus:ring-4 focus:ring-[#7257ff]/10"
+            className="w-full appearance-none rounded-xl border border-[#3b3752] bg-[#201e36] px-4 py-3.5 text-sm text-white outline-none transition focus:border-[#8d7aff] focus:bg-[#24213e] focus:ring-4 focus:ring-[#7257ff]/20"
           >
             <option value="" disabled>Select a business type</option>
             <option value="retailer">Retail</option>
@@ -119,7 +119,7 @@ const Signup = () => {
         </div>
 
         <div>
-          <label htmlFor="signup-password" className="mb-2 block text-sm font-semibold text-[#343148]">
+          <label htmlFor="signup-password" className="mb-2 block text-sm font-semibold text-[#e2dfeb]">
             Create a password
           </label>
           <input
@@ -130,14 +130,14 @@ const Signup = () => {
             minLength={8}
             required
             placeholder="At least 8 characters"
-            className="w-full rounded-xl border border-[#e6e4ed] bg-[#fcfbfe] px-4 py-3.5 text-sm text-[#201e35] outline-none transition placeholder:text-[#aaa7b5] focus:border-[#8d7aff] focus:bg-white focus:ring-4 focus:ring-[#7257ff]/10"
+            className="w-full rounded-xl border border-[#3b3752] bg-[#201e36] px-4 py-3.5 text-sm text-white outline-none transition placeholder:text-[#aaa6bb] focus:border-[#8d7aff] focus:bg-[#24213e] focus:ring-4 focus:ring-[#7257ff]/20"
           />
         </div>
 
         {message && (
           <p
             role="alert"
-            className="rounded-xl border border-[#f2d89e] bg-[#fff9e9] px-4 py-3 text-sm leading-5 text-[#785c1c]"
+            className="rounded-xl border border-[#735626] bg-[#3b2d1d] px-4 py-3 text-sm leading-5 text-[#ffdc97]"
           >
             {message}
           </p>
@@ -155,9 +155,9 @@ const Signup = () => {
         </motion.button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-[#777487]">
+      <p className="mt-6 text-center text-sm text-[#c2bfd0]">
         Already have an account?{' '}
-        <Link to="/login" className="font-bold text-[#7257ff] transition hover:text-[#523ad4]">
+        <Link to="/login" className="font-bold text-[#c9bdff] transition hover:text-white">
           Log in
         </Link>
       </p>

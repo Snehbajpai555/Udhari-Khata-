@@ -8,7 +8,7 @@ const features = [
     title: 'Customer khata',
     description:
       'Keep credit sales, payments and balances together in a clear record for each customer.',
-    color: 'bg-[#eae5ff] text-[#654de5]',
+    color: 'bg-[#302b50] text-[#c9bdff]',
   },
   {
     number: '02',
@@ -16,7 +16,7 @@ const features = [
     title: 'Supplier dues',
     description:
       'Track what your business owes suppliers alongside the money customers owe you.',
-    color: 'bg-[#dff8ef] text-[#16866b]',
+    color: 'bg-[#1d3b32] text-[#a8efd3]',
   },
   {
     number: '03',
@@ -24,7 +24,7 @@ const features = [
     title: 'Everyday entries',
     description:
       'Record a credit sale or payment while the details are fresh, not at the end of the week.',
-    color: 'bg-[#fff0d6] text-[#b56713]',
+    color: 'bg-[#3b2d1d] text-[#ffd49b]',
   },
   {
     number: '04',
@@ -32,7 +32,7 @@ const features = [
     title: 'A clearer overview',
     description:
       'Bring customer and supplier balances into one place instead of piecing together loose notes.',
-    color: 'bg-[#ffe5e8] text-[#c44761]',
+    color: 'bg-[#3d2634] text-[#ffb5c2]',
   },
 ]
 
@@ -58,7 +58,7 @@ const steps = [
 ]
 
 const Landing = () => (
-  <div className="min-h-screen overflow-hidden bg-[#f7f6fc] text-[#19172b]">
+  <div className="min-h-screen overflow-hidden bg-[#0c0b18] text-[#f5f4fb]">
     <header className="absolute inset-x-0 top-0 z-30 px-4 pt-4 sm:px-8 sm:pt-6">
       <nav
         aria-label="Main navigation"
@@ -203,23 +203,23 @@ const Landing = () => (
               className="absolute -left-8 top-16 z-10 hidden rounded-2xl border border-white/15 bg-[#24213e]/90 p-3.5 shadow-2xl backdrop-blur-xl sm:block"
             >
               <span className="flex items-center gap-2 text-xs font-semibold text-white/80">
-                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#dff8ef] text-[#16866b]">↗</span>
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#1d3b32] text-[#a8efd3]">↗</span>
                 Customer credit
               </span>
               <span className="mt-2 block text-sm font-bold">Example entry</span>
             </motion.div>
 
             <div className="relative rounded-[2rem] border border-white/15 bg-white/[0.08] p-3 shadow-[0_32px_100px_rgba(0,0,0,0.38)] backdrop-blur-xl sm:p-4">
-              <div className="overflow-hidden rounded-[1.45rem] bg-[#fbfbff] text-[#201e35]">
-                <div className="flex items-center justify-between border-b border-[#eeedf5] px-5 py-4 sm:px-6">
+              <div className="overflow-hidden rounded-[1.45rem] bg-[#17162a] text-[#f5f4fb]">
+              <div className="flex items-center justify-between border-b border-[#302d46] px-5 py-4 sm:px-6">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#eeeaff] text-sm font-bold text-[#7257ff]">M</span>
+                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#302b50] text-sm font-bold text-[#c9bdff]">M</span>
                     <div>
                       <p className="text-sm font-bold">Mohan Stores</p>
-                      <p className="text-[11px] text-[#8b899a]">Illustrative customer account</p>
+                      <p className="text-[11px] text-[#b3b0c1]">Illustrative customer account</p>
                     </div>
                   </div>
-                  <span className="rounded-full bg-[#f2efff] px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-[#7257ff]">
+                  <span className="rounded-full bg-[#302b50] px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-[#c9bdff]">
                     Sample
                   </span>
                 </div>
@@ -227,7 +227,7 @@ const Landing = () => (
                   <div className="rounded-2xl bg-gradient-to-br from-[#201d3b] to-[#39306b] p-5 text-white">
                     <div className="flex items-start justify-between">
                       <div>
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/55">Example outstanding</p>
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/75">Example outstanding</p>
                         <p className="mt-2 text-3xl font-semibold tracking-tight">₹8,400</p>
                       </div>
                       <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-[#c9ff63]">↗</span>
@@ -247,23 +247,23 @@ const Landing = () => (
                   </div>
 
                   <div className="mt-5 flex items-center justify-between">
-                    <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#8b899a]">Example entries</p>
-                    <span className="text-[10px] text-[#aaa8b6]">Sample figures only</span>
+                    <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#c2bfd0]">Example entries</p>
+                    <span className="text-[10px] text-[#aaa6bb]">Sample figures only</span>
                   </div>
                   <div className="mt-2 divide-y divide-[#f0eff5]">
                     <div className="flex items-center justify-between gap-3 py-3">
                       <div className="flex items-center gap-3">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#fff0d6] text-sm text-[#b56713]">＋</span>
-                        <div><p className="text-xs font-semibold">Credit sale</p><p className="mt-0.5 text-[10px] text-[#aaa8b6]">Example transaction</p></div>
+                        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#3b2d1d] text-sm text-[#ffd49b]">＋</span>
+                        <div><p className="text-xs font-semibold">Credit sale</p><p className="mt-0.5 text-[10px] text-[#aaa6bb]">Example transaction</p></div>
                       </div>
-                      <span className="text-xs font-bold text-[#b56713]">+ ₹10,000</span>
+                      <span className="text-xs font-bold text-[#ffd49b]">+ ₹10,000</span>
                     </div>
                     <div className="flex items-center justify-between gap-3 py-3">
                       <div className="flex items-center gap-3">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#dff8ef] text-sm text-[#16866b]">✓</span>
-                        <div><p className="text-xs font-semibold">Payment received</p><p className="mt-0.5 text-[10px] text-[#aaa8b6]">Example transaction</p></div>
+                        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#1d3b32] text-sm text-[#a8efd3]">✓</span>
+                        <div><p className="text-xs font-semibold">Payment received</p><p className="mt-0.5 text-[10px] text-[#aaa6bb]">Example transaction</p></div>
                       </div>
-                      <span className="text-xs font-bold text-[#16866b]">− ₹1,600</span>
+                      <span className="text-xs font-bold text-[#a8efd3]">− ₹1,600</span>
                     </div>
                   </div>
                 </div>
@@ -275,7 +275,7 @@ const Landing = () => (
               transition={{ duration: 5.5, repeat: Infinity, ease: 'easeInOut', delay: 0.4 }}
               className="absolute -bottom-6 -right-4 rounded-2xl border border-white/15 bg-[#24213e]/90 px-4 py-3 shadow-2xl backdrop-blur-xl sm:-right-8"
             >
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-white/45">One clear place</p>
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-white/70">One clear place</p>
               <p className="mt-1 text-sm font-bold text-white">Khata at a glance <span className="ml-1 text-[#c9ff63]">✦</span></p>
             </motion.div>
           </motion.div>
@@ -289,7 +289,7 @@ const Landing = () => (
       </section>
 
       <section id="features" className="relative px-5 py-20 sm:px-8 sm:py-28">
-        <div aria-hidden="true" className="absolute right-0 top-20 h-64 w-64 rounded-full bg-[#ded6ff]/40 blur-[100px]" />
+        <div aria-hidden="true" className="absolute right-0 top-20 h-64 w-64 rounded-full bg-[#7257ff]/20 blur-[100px]" />
         <div className="relative mx-auto max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -298,11 +298,11 @@ const Landing = () => (
             transition={{ duration: 0.65 }}
             className="mx-auto max-w-2xl text-center"
           >
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#7257ff]">Made for everyday business</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#ad9eff]">Made for everyday business</p>
             <h2 className="mt-4 text-3xl font-semibold leading-tight tracking-[-0.04em] sm:text-5xl">
               The little details that keep business moving.
             </h2>
-            <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-[#727082]">
+            <p className="mx-auto mt-5 max-w-xl text-base leading-7 text-[#c2bfd0]">
               From a customer’s credit balance to a supplier payment, give your everyday records a more organized home.
             </p>
           </motion.div>
@@ -316,24 +316,24 @@ const Landing = () => (
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ duration: 0.55, delay: index * 0.09 }}
                 whileHover={{ y: -8, rotate: index % 2 === 0 ? -1 : 1 }}
-                className="group rounded-[1.6rem] border border-[#ebe9f2] bg-white p-6 shadow-[0_8px_30px_rgba(36,29,79,0.04)] transition-shadow hover:shadow-[0_24px_50px_rgba(36,29,79,0.12)] sm:p-7"
+                className="group rounded-[1.6rem] border border-[#302d46] bg-[#17162a] p-6 shadow-[0_8px_30px_rgba(0,0,0,0.16)] transition-shadow hover:shadow-[0_24px_50px_rgba(0,0,0,0.3)] sm:p-7"
               >
                 <div className="flex items-center justify-between">
                   <span className={`flex h-12 w-12 items-center justify-center rounded-2xl text-2xl font-semibold transition-transform duration-300 group-hover:rotate-[-8deg] group-hover:scale-110 ${feature.color}`}>
                     {feature.icon}
                   </span>
-                  <span className="text-xs font-bold tracking-widest text-[#c3c0d0]">{feature.number}</span>
+                  <span className="text-xs font-bold tracking-widest text-[#a9a6bb]">{feature.number}</span>
                 </div>
                 <h3 className="mt-7 text-lg font-bold tracking-tight">{feature.title}</h3>
-                <p className="mt-2 text-sm leading-6 text-[#777487]">{feature.description}</p>
-                <span className="mt-5 inline-block text-sm font-bold text-[#7257ff] transition-transform group-hover:translate-x-1">Thoughtfully organized <span aria-hidden="true">→</span></span>
+                <p className="mt-2 text-sm leading-6 text-[#c2bfd0]">{feature.description}</p>
+                <span className="mt-5 inline-block text-sm font-bold text-[#ad9eff] transition-transform group-hover:translate-x-1">Thoughtfully organized <span aria-hidden="true">→</span></span>
               </motion.article>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="how-it-works" className="overflow-hidden bg-[#eeecf8] px-5 py-20 sm:px-8 sm:py-28">
+      <section id="how-it-works" className="overflow-hidden border-y border-[#25223a] bg-[#111023] px-5 py-20 sm:px-8 sm:py-28">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
           <motion.div
             initial={{ opacity: 0, x: -28 }}
@@ -342,11 +342,11 @@ const Landing = () => (
             transition={{ duration: 0.65 }}
             className="lg:sticky lg:top-24 lg:self-start"
           >
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#7257ff]">A straightforward routine</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#ad9eff]">A straightforward routine</p>
             <h2 className="mt-4 text-3xl font-semibold leading-tight tracking-[-0.04em] sm:text-5xl">
               Easy to follow. Familiar from day one.
             </h2>
-            <p className="mt-5 text-base leading-7 text-[#727082]">
+            <p className="mt-5 text-base leading-7 text-[#c2bfd0]">
               A digital khata follows the same simple idea as a paper ledger: note who a transaction is with, record what changed, and review the balance when needed.
             </p>
             <Link to="/signup" className="group mt-7 inline-flex items-center gap-2 rounded-xl bg-[#7257ff] px-5 py-3.5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(114,87,255,0.25)] transition hover:-translate-y-1 hover:bg-[#5f43ec] hover:shadow-[0_16px_30px_rgba(114,87,255,0.33)]">
@@ -364,14 +364,14 @@ const Landing = () => (
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 0.55, delay: index * 0.14 }}
-                  className="relative mb-4 rounded-[1.6rem] border border-white/80 bg-white/80 p-6 shadow-sm backdrop-blur sm:mb-5 sm:grid sm:grid-cols-[3.5rem_1fr] sm:gap-5 sm:p-7"
+                  className="relative mb-4 rounded-[1.6rem] border border-white/10 bg-[#17162a]/90 p-6 shadow-sm backdrop-blur sm:mb-5 sm:grid sm:grid-cols-[3.5rem_1fr] sm:gap-5 sm:p-7"
                 >
                   <span className="relative z-10 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#7257ff] text-sm font-bold text-white shadow-[0_8px_20px_rgba(114,87,255,0.25)]">
                     {step.number}
                   </span>
                   <div className="mt-4 sm:mt-1">
                     <h3 className="text-lg font-bold">{step.title}</h3>
-                    <p className="mt-2 text-sm leading-6 text-[#777487]">{step.description}</p>
+                    <p className="mt-2 text-sm leading-6 text-[#c2bfd0]">{step.description}</p>
                   </div>
                 </motion.li>
               ))}
@@ -396,7 +396,7 @@ const Landing = () => (
               <h2 className="mt-4 text-3xl font-semibold leading-tight tracking-[-0.04em] sm:text-4xl">
                 A familiar way to keep track, with a little more clarity.
               </h2>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-white/65 sm:text-base">
+              <p className="mt-4 max-w-2xl text-sm leading-7 text-white/80 sm:text-base">
                 A khata helps a business keep track of credit given, payments made and balances still due. Digital records can make everyday entries easier to find; formal bookkeeping and tax requirements may still need dedicated accounting support.
               </p>
             </div>
@@ -409,9 +409,9 @@ const Landing = () => (
       </section>
     </main>
 
-    <footer className="border-t border-[#e8e6f0] bg-white px-5 py-7 sm:px-8">
-      <div className="mx-auto flex max-w-7xl flex-col gap-3 text-sm text-[#777487] sm:flex-row sm:items-center sm:justify-between">
-        <Link to="/" className="font-bold text-[#26233d]">Udhari Khata</Link>
+    <footer className="border-t border-[#302d46] bg-[#111023] px-5 py-7 sm:px-8">
+      <div className="mx-auto flex max-w-7xl flex-col gap-3 text-sm text-[#c2bfd0] sm:flex-row sm:items-center sm:justify-between">
+        <Link to="/" className="font-bold text-white">Udhari Khata</Link>
         <p>Clearer records for the everyday work of running a business.</p>
         <div className="flex gap-5 font-semibold">
           <Link className="transition hover:text-[#7257ff]" to="/login">Log in</Link>

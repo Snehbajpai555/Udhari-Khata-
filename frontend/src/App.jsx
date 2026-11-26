@@ -4,6 +4,7 @@ import Landing from "./Pages/Landing.jsx";
 import Login from "./Pages/Login.jsx";
 import Signup from "./Pages/Signup.jsx";
 import { Dashboard } from "./Pages/Dashboard.jsx";
+import Customers from "./Pages/Customer.jsx";
 function App() {
   return (
     <BrowserRouter>
@@ -13,11 +14,11 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/customers" element={<Customers />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </MotionConfig>
     </BrowserRouter>
   );
 }
-
 export default App;
