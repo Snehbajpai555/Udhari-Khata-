@@ -1,10 +1,9 @@
-import { MotionConfig } from 'motion/react'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
-import Landing from './Pages/Landing.jsx'
-import Login from './Pages/Login.jsx'
-import Signup from './Pages/Signup.jsx'
-import Dashboard from './Pages/Dashboard.jsx'
-
+import { MotionConfig } from "motion/react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import Landing from "./Pages/Landing.jsx";
+import Login from "./Pages/Login.jsx";
+import Signup from "./Pages/Signup.jsx";
+import { Dashboard } from "./Pages/Dashboard.jsx";
 function App() {
   return (
     <BrowserRouter>
@@ -18,7 +17,7 @@ function App() {
         </Routes>
       </MotionConfig>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;
