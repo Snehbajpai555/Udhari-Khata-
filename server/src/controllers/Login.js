@@ -4,21 +4,29 @@ import { verifyPassword } from "../utils/password.js";
 const isEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 export async function login(req, res, next) {
-  const { email, password } = req.body ?? {};
+  const { email, phone, password } = req.body ?? {};
+  const hasEmail = email !== undefined;
+  const hasPhone = phone !== undefined;
 
   if (
-    typeof email !== "string" ||
-    !isEmail(email.trim()) ||
+    hasEmail === hasPhone ||
+    (hasEmail && (typeof email !== "string" || !isEmail(email.trim()))) ||
+    (hasPhone && (typeof phone !== "string" || !phone.trim())) ||
     typeof password !== "string" ||
     !password
   ) {
-    return res.status(400).json({ message: "Provide a valid email and password." });
+    return res.status(400).json({
+      message: "Provide either a valid email or phone number, and a password.",
+    });
   }
 
   try {
-    const user = await User.findOne({ email: email.trim().toLowerCase() }).select("+password");
+    const query = hasEmail
+      ? { email: email.trim().toLowerCase() }
+      : { phone: phone.trim() };
+    const user = await User.findOne(query).select("+password");
     if (!user || !(await verifyPassword(password, user.password))) {
-      return res.status(401).json({ message: "Invalid email or password." });
+      return res.status(401).json({ message: "Invalid credentials." });
     }
 
     return res.status(200).json({
@@ -26,7 +34,9 @@ export async function login(req, res, next) {
       user: {
         id: user.id,
         name: user.name,
+        businessName: user.businessName,
         email: user.email,
+        phone: user.phone,
         role: user.role,
       },
     });

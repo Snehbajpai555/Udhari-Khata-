@@ -7,6 +7,11 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    businessName: {
+      type: String,
+      required: true,
+      trim: true,
+    },
 
     email: {
       type: String,
@@ -32,6 +37,12 @@ const userSchema = new mongoose.Schema(
         "service",
         "other",
       ],
+    },
+    phone: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
     },
   },
   {
