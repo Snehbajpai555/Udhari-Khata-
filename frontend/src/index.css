@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Segoe UI", sans-serif;
+  --color-brand-purple: #7257ff;
+  --color-brand-ink: #111023;
+  --color-brand-lime: #c9ff63;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  font-family: "Inter", "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  background: #f7f6fc;
+}
+
+::selection {
+  background: #ded7ff;
+  color: #201e35;
+}
+
+:focus-visible {
+  outline: 2px solid #7257ff;
+  outline-offset: 3px;
+}
+
+.hero-grid,
+.auth-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: linear-gradient(to bottom, black, transparent 92%);
+}
+
+.hero-grid {
+  background-position: center top;
+}
+
+.auth-grid {
+  background-position: 20% 30%;
+}
+
+.hero-orb-one {
+  animation: orb-drift 13s ease-in-out infinite alternate;
+}
+
+.hero-orb-two {
+  animation: orb-drift 16s ease-in-out infinite alternate-reverse;
+}
+
+.auth-orb {
+  animation: orb-drift 15s ease-in-out infinite alternate;
+}
+
+.auth-orb-delay {
+  animation-delay: -7s;
+}
+
+@keyframes orb-drift {
+  from {
+    transform: translate3d(-12px, -10px, 0) scale(0.96);
+  }
+  to {
+    transform: translate3d(22px, 18px, 0) scale(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
