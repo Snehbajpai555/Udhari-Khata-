@@ -1,14 +1,34 @@
 import { useState } from 'react'
 import { motion } from 'motion/react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import AuthLayout from './AuthLayout.jsx'
+import { login } from '../api/auth.js'
 
 const Login = () => {
+  const navigate = useNavigate()
   const [message, setMessage] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
-    setMessage('Login is not available yet. Your details were not sent or saved.')
+    setMessage('')
+    setIsSubmitting(true)
+
+    const formData = new FormData(event.currentTarget)
+    const identity = String(formData.get('identity') || '').trim()
+    const password = String(formData.get('password') || '')
+    const credentials = identity.includes('@')
+      ? { email: identity, password }
+      : { phone: identity, password }
+
+    try {
+      const result = await login(credentials)
+      navigate('/dashboard', { replace: true, state: { user: result.user } })
+    } catch (error) {
+      setMessage(error.message)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -47,18 +67,23 @@ const Login = () => {
         </div>
 
         {message && (
-          <p role="status" className="rounded-xl border border-[#f2d89e] bg-[#fff9e9] px-4 py-3 text-sm leading-5 text-[#785c1c]">
+          <p
+            role="alert"
+            className="rounded-xl border border-[#f2d89e] bg-[#fff9e9] px-4 py-3 text-sm leading-5 text-[#785c1c]"
+          >
             {message}
           </p>
         )}
 
         <motion.button
           type="submit"
+          disabled={isSubmitting}
           whileHover={{ y: -2, boxShadow: '0 14px 28px rgba(114,87,255,0.28)' }}
           whileTap={{ scale: 0.98 }}
-          className="group flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#7257ff] to-[#9768ff] px-5 py-3.5 text-sm font-bold text-white shadow-[0_8px_20px_rgba(114,87,255,0.20)] transition"
+          className="group flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#7257ff] to-[#9768ff] px-5 py-3.5 text-sm font-bold text-white shadow-[0_8px_20px_rgba(114,87,255,0.20)] transition disabled:cursor-not-allowed disabled:opacity-60"
         >
-          Continue to your khata <span className="transition-transform group-hover:translate-x-1">→</span>
+          {isSubmitting ? 'Signing in...' : 'Continue to your khata'}
+          {!isSubmitting && <span className="transition-transform group-hover:translate-x-1">→</span>}
         </motion.button>
       </form>
 

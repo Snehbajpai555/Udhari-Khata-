@@ -114,7 +114,7 @@ const AuthLayout = ({ children, mode }) => {
           </div>
 
           <p className="mt-5 text-center text-xs leading-5 text-[#9692a3]">
-            The account service is not connected yet. Details entered here are not saved or sent.
+            Your details are sent to the account service to process this request.
           </p>
         </motion.div>
       </section>
