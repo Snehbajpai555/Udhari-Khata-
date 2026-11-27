@@ -3,9 +3,11 @@ import { motion } from 'motion/react'
 import { Link, useNavigate } from 'react-router-dom'
 import AuthLayout from './AuthLayout.jsx'
 import { signup } from '../api/auth.js'
+import { useAuth } from '../contexts/auth-context.js'
 
 const Signup = () => {
   const navigate = useNavigate()
+  const { setAuthenticatedSession } = useAuth()
   const [message, setMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -26,7 +28,8 @@ const Signup = () => {
 
     try {
       const result = await signup(details)
-      navigate('/dashboard', { replace: true, state: { user: result.user } })
+      setAuthenticatedSession(result)
+      navigate('/dashboard', { replace: true })
     } catch (error) {
       setMessage(error.message)
     } finally {

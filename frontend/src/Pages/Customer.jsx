@@ -1,593 +1,236 @@
 import { useEffect, useMemo, useState } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
-import Header from '../Components/Header.jsx'
-import Sidebar from '../Components/Sidebar.jsx'
+import { BellRing, Download, Pencil, Plus, Search, Trash2, Users, X } from 'lucide-react'
+import AppLayout from '../Components/AppLayout'
+import PageHeader from '../Components/PageHeader'
+import MetricCard from '../Components/MetricCard'
+import Toast from '../Components/Toast'
+import { apiDelete, apiGet, apiPatch, apiPost } from '../api/client'
 
-const initialParties = [
-  { id: 1, name: 'Aman Verma (Customer)', type: 'CUSTOMER', phone: '9876543210', gstin: '-', balance: 0 },
-  { id: 2, name: 'bigkgg', type: 'CUSTOMER', phone: '-', gstin: '-', balance: -53.5 },
-  { id: 3, name: 'HDFC Bank Media (Brand/Advertiser)', type: 'ADVERTISER', phone: '9123456789', gstin: '-', balance: 0 },
-  { id: 4, name: 'sdasd', type: 'CUSTOMER', phone: '-', gstin: '-', balance: 53.5 },
-  { id: 5, name: 'Vipin Publisher (Affiliate Vendor)', type: 'PUBLISHER', phone: '9988776655', gstin: '-', balance: 0 },
-  { id: 6, name: 'Sharma Traders', type: 'SUPPLIER', phone: '9812345670', gstin: '09ABCDE1234F1Z5', balance: -1200 },
-]
+const money = (paise) => `₹ ${(paise / 100).toLocaleString('en-IN', { maximumFractionDigits: 2 })}`
+const emptyForm = { name: '', phone: '', address: '', category: 'Regular', creditLimit: '', balance: '' }
 
-const partyTypes = [
-  { key: 'ALL', label: 'All parties' },
-  { key: 'CUSTOMER', label: 'Customers' },
-  { key: 'SUPPLIER', label: 'Suppliers' },
-  { key: 'ADVERTISER', label: 'Advertisers' },
-  { key: 'PUBLISHER', label: 'Publishers' },
-]
+const initials = (name) => name.split(/\s+/).slice(0, 2).map((word) => word[0]).join('').toUpperCase()
 
-const typeStyles = {
-  CUSTOMER: 'bg-[#302b50] text-[#c9bdff]',
-  SUPPLIER: 'bg-[#3b2d1d] text-[#ffd49b]',
-  ADVERTISER: 'bg-[#302b50] text-[#d0c7ff]',
-  PUBLISHER: 'bg-[#1d3b32] text-[#a8efd3]',
-}
-
-const emptyForm = {
-  name: '',
-  type: 'CUSTOMER',
-  phone: '',
-  gstin: '',
-  balance: 0,
-}
-
-const formatCurrency = (amount) =>
-  `₹${Math.abs(amount).toLocaleString('en-IN', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`
-
-const getInitials = (name) =>
-  name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join('')
-    .toUpperCase()
-
-const Customers = () => {
-  const [parties, setParties] = useState(initialParties)
-  const [tab, setTab] = useState('ALL')
+export default function Customers() {
+  const [customers, setCustomers] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
   const [search, setSearch] = useState('')
-  const [showModal, setShowModal] = useState(false)
-  const [editing, setEditing] = useState(null)
+  const [category, setCategory] = useState('All')
+  const [dialog, setDialog] = useState(null)
+  const [profile, setProfile] = useState(null)
+  const [ledger, setLedger] = useState([])
+  const [ledgerLoading, setLedgerLoading] = useState(false)
   const [toast, setToast] = useState('')
-  const [form, setForm] = useState(emptyForm)
+
+  const loadCustomers = async () => {
+    setLoadError('')
+    try {
+      const result = await apiGet('/api/customers?limit=100')
+      setCustomers(result.data)
+    } catch (error) {
+      setLoadError(error.message)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    if (!toast) return undefined
+    let active = true
+    apiGet('/api/customers?limit=100')
+      .then((result) => { if (active) setCustomers(result.data) })
+      .catch((error) => { if (active) setLoadError(error.message) })
+      .finally(() => { if (active) setLoading(false) })
+    return () => { active = false }
+  }, [])
 
-    const timeoutId = window.setTimeout(() => setToast(''), 2400)
-    return () => window.clearTimeout(timeoutId)
+  useEffect(() => {
+    if (!toast) return
+    const timer = setTimeout(() => setToast(''), 2600)
+    return () => clearTimeout(timer)
   }, [toast])
 
-  const stats = useMemo(
-    () => ({
-      total: parties.length,
-      receivable: parties
-        .filter((party) => party.balance > 0)
-        .reduce((sum, party) => sum + party.balance, 0),
-      payable: Math.abs(
-        parties
-          .filter((party) => party.balance < 0)
-          .reduce((sum, party) => sum + party.balance, 0),
-      ),
-    }),
-    [parties],
-  )
+  const filtered = useMemo(() => customers.filter((customer) =>
+    (category === 'All' || customer.category === category) &&
+    `${customer.name} ${customer.phone} ${customer.address}`.toLowerCase().includes(search.toLowerCase())
+  ), [category, customers, search])
 
-  const filteredParties = useMemo(() => {
-    const query = search.trim().toLowerCase()
+  const outstanding = customers.reduce((sum, customer) => sum + customer.outstandingPaise, 0)
+  const overdue = customers.filter((customer) => customer.outstandingPaise >= 75000).length
 
-    return parties.filter((party) => {
-      const matchesType = tab === 'ALL' || party.type === tab
-      const matchesSearch =
-        !query ||
-        [party.name, party.phone, party.gstin].some((value) =>
-          value.toLowerCase().includes(query),
-        )
-
-      return matchesType && matchesSearch
-    })
-  }, [parties, search, tab])
-
-  const openAdd = () => {
-    setEditing(null)
-    setForm({ ...emptyForm, type: tab === 'ALL' ? 'CUSTOMER' : tab })
-    setShowModal(true)
-  }
-
-  const openEdit = (party) => {
-    setEditing(party)
-    setForm({ ...party })
-    setShowModal(true)
-  }
+  const openAdd = () => setDialog({ ...emptyForm })
+  const openEdit = (customer) => setDialog({
+    id: customer._id,
+    ...customer,
+    creditLimit: String(customer.creditLimitPaise / 100),
+  })
 
   const saveParty = (event) => {
     event.preventDefault()
-    const party = {
-      ...form,
-      name: form.name.trim(),
-      phone: form.phone.trim() || '-',
-      gstin: form.gstin.trim() || '-',
-      balance: Number(form.balance) || 0,
+    void submitParty()
+  }
+
+  const submitParty = async () => {
+    if (!dialog.name.trim()) return
+    if (!/^(\+?91[\s-]?)?[6-9]\d{9}$/.test(dialog.phone.replace(/\s/g, ''))) {
+      setToast('Enter a valid Indian mobile number.')
+      return
     }
 
-    if (editing) {
-      setParties((current) =>
-        current.map((item) =>
-          item.id === editing.id ? { ...party, id: editing.id } : item,
-        ),
-      )
-      setToast('Party details updated.')
-    } else {
-      setParties((current) => [{ ...party, id: Date.now() }, ...current])
-      setToast('Party added to your directory.')
+    const record = {
+      name: dialog.name.trim(),
+      phone: dialog.phone.trim(),
+      address: dialog.address.trim(),
+      category: dialog.category,
+      creditLimitPaise: Math.round(Number(dialog.creditLimit || 0) * 100),
     }
 
-    setShowModal(false)
+    try {
+      if (dialog.id) {
+        await apiPatch(`/api/customers/${dialog.id}`, record)
+        setToast('Customer details updated.')
+      } else {
+        record.openingBalancePaise = Math.round(Number(dialog.balance || 0) * 100)
+        await apiPost('/api/customers', record)
+        setToast('Customer added.')
+      }
+      setDialog(null)
+      await loadCustomers()
+    } catch (error) {
+      setToast(error.message)
+    }
   }
 
-  const deleteParty = (party) => {
-    if (!window.confirm(`Remove ${party.name} from your parties?`)) return
-
-    setParties((current) => current.filter((item) => item.id !== party.id))
-    setToast('Party removed from your directory.')
+  const deleteCustomer = async (customer) => {
+    if (!window.confirm(`Remove ${customer.name}? This cannot be undone.`)) return
+    try {
+      await apiDelete(`/api/customers/${customer._id}`)
+      if (profile?._id === customer._id) setProfile(null)
+      setToast('Customer removed.')
+      await loadCustomers()
+    } catch (error) {
+      setToast(error.message)
+    }
   }
 
-  const clearFilters = () => {
-    setSearch('')
-    setTab('ALL')
+  const openProfile = async (customer) => {
+    setProfile(customer)
+    setLedger([])
+    setLedgerLoading(true)
+    try {
+      const result = await apiGet(`/api/customers/${customer._id}/ledger`)
+      setLedger(result.data)
+    } catch (error) {
+      setToast(error.message)
+    } finally {
+      setLedgerLoading(false)
+    }
   }
 
-  const renderBalance = (party) => {
-    const isReceivable = party.balance > 0
-    const isPayable = party.balance < 0
-
-    return (
-      <div>
-        <p
-          className={`text-lg font-semibold ${
-            isReceivable
-              ? 'text-[#ffd49b]'
-              : isPayable
-                ? 'text-[#a8efd3]'
-                : 'text-white'
-          }`}
-        >
-          {isReceivable ? '+' : isPayable ? '−' : ''}
-          {formatCurrency(party.balance)}
-        </p>
-        <p className="mt-0.5 text-base text-[#c2bfd0]">
-          {isReceivable ? 'Owed to you' : isPayable ? 'You owe' : 'Settled'}
-        </p>
-      </div>
-    )
+  const exportStatement = async (customer) => {
+    try {
+      const result = await apiGet(`/api/customers/${customer._id}/ledger`)
+      const headings = ['Date', 'Reference', 'Type', 'Description', 'Amount (paise)']
+      const data = result.data.map((entry) => [entry.transactionDate, entry.reference, entry.type, entry.description, entry.amountPaise])
+      const csv = [headings, ...data].map((line) => line.map((value) => `"${String(value ?? '').replaceAll('"', '""')}"`).join(',')).join('\r\n')
+      const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }))
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `${customer.name.replace(/[^a-z0-9]/gi, '-').toLowerCase()}-statement.csv`
+      link.click()
+      URL.revokeObjectURL(url)
+    } catch (error) {
+      setToast(error.message)
+    }
   }
-
-  const renderActions = (party) => (
-    <div className="flex items-center gap-1">
-      <button
-        type="button"
-        onClick={() => setToast(`Statement for ${party.name} is coming soon.`)}
-        aria-label={`View statement for ${party.name}`}
-        title="View statement"
-        className="flex h-10 w-10 items-center justify-center rounded-xl text-lg text-[#c9bdff] transition hover:bg-white/10"
-      >
-        ↗
-      </button>
-      <button
-        type="button"
-        onClick={() => openEdit(party)}
-        aria-label={`Edit ${party.name}`}
-        title="Edit party"
-        className="flex h-10 w-10 items-center justify-center rounded-xl text-lg text-[#c2bfd0] transition hover:bg-white/10 hover:text-white"
-      >
-        ✎
-      </button>
-      <button
-        type="button"
-        onClick={() => deleteParty(party)}
-        aria-label={`Delete ${party.name}`}
-        title="Delete party"
-        className="flex h-10 w-10 items-center justify-center rounded-xl text-lg text-[#a9a6bb] transition hover:bg-red-500/10 hover:text-[#ff9da8]"
-      >
-        ×
-      </button>
-    </div>
-  )
 
   return (
-    <div className="flex min-h-screen bg-[#0c0b18] text-[#f5f4fb]">
-      <Sidebar theme="dark" />
-
-      <div className="flex min-w-0 flex-1 flex-col">
-        <Header
-          theme="dark"
-          title="Party directory"
-          subtitle="Keep your customer and supplier records organized."
+    <AppLayout title="Customers" subtitle="Customer balances and digital Khata records">
+      <div className="space-y-6">
+        <PageHeader
+          eyebrow="Customer Khata"
+          title="Customers"
+          description="Track balances, contacts and payment follow-ups."
+          actions={<button type="button" onClick={openAdd} className="inline-flex items-center gap-2 rounded-lg bg-[#172B4D] px-4 py-2.5 text-sm font-bold text-white"><Plus size={16} /> Add customer</button>}
         />
 
-        <main className="mx-auto w-full max-w-[1440px] flex-1 space-y-6 p-5 sm:p-8">
-          <section className="relative isolate overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#151329] px-6 py-7 text-white shadow-[0_20px_50px_rgba(0,0,0,0.28)] sm:px-8 sm:py-9">
-            <div aria-hidden="true" className="hero-grid absolute inset-0 opacity-25" />
-            <div
-              aria-hidden="true"
-              className="absolute -right-16 -top-32 h-72 w-72 rounded-full bg-[#7257ff]/30 blur-[90px]"
-            />
-            <div className="relative flex flex-col gap-7 sm:flex-row sm:items-end sm:justify-between">
-              <div className="max-w-2xl">
-                <p className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-3 py-1.5 text-sm font-bold uppercase tracking-[0.16em] text-white/85">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#c9ff63]" />
-                  Your business, in good company
-                </p>
-                <h1 className="mt-4 text-4xl font-semibold leading-tight tracking-[-0.045em] sm:text-5xl">
-                  Every relationship,
-                  <span className="text-[#c9ff63]"> one clear view.</span>
-                </h1>
-                <p className="mt-3 max-w-xl text-lg leading-7 text-white/80 sm:text-xl">
-                  Keep customers, suppliers and business partners together with
-                  the balances and contact details you need.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={openAdd}
-                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#c9ff63] px-5 py-3 text-lg font-bold text-[#19172b] shadow-[0_8px_24px_rgba(201,255,99,0.16)] transition hover:-translate-y-0.5 hover:bg-[#d8ff8e]"
-              >
-                <span aria-hidden="true" className="text-lg leading-none">＋</span>
-                Add a party
-              </button>
+        <section className="grid gap-4 sm:grid-cols-3">
+          <MetricCard label="Customers" value={String(customers.length)} caption="Active customer accounts" icon={Users} />
+          <MetricCard label="Total outstanding" value={money(outstanding)} caption="Amount owed to the shop" />
+          <MetricCard label="High balances" value={String(overdue)} caption="Accounts needing follow-up" />
+        </section>
+
+        <section className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+          <div className="flex flex-col gap-3 border-b border-slate-200 p-4 lg:flex-row lg:items-center lg:justify-between">
+            <label className="flex w-full items-center gap-2 rounded-lg border border-slate-200 px-3 py-2.5 lg:max-w-sm">
+              <Search size={16} className="text-slate-400" />
+              <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search name, phone or address" className="w-full text-sm outline-none" />
+            </label>
+            <div className="flex gap-2 overflow-x-auto">
+              {['All', 'Regular', 'Retail', 'Wholesale'].map((item) => (
+                <button key={item} type="button" onClick={() => setCategory(item)} className={`shrink-0 rounded-lg px-3 py-2 text-sm font-semibold ${category === item ? 'bg-[#E9F5F3] text-[#159A8A]' : 'border border-slate-200 text-slate-600'}`}>{item}</button>
+              ))}
             </div>
-          </section>
+          </div>
 
-          <section aria-label="Party balance summary" className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            <article className="rounded-2xl border border-[#302d46] bg-[#17162a] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.16)]">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-lg font-semibold text-[#c2bfd0]">Total parties</p>
-                  <p className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">{stats.total}</p>
-                  <p className="mt-1 text-base text-[#a9a6bb]">Across your directory</p>
-                </div>
-                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#302b50] text-lg font-semibold text-[#c9bdff]">
-                  ♧
-                </span>
-              </div>
-            </article>
-
-            <article className="rounded-2xl border border-[#302d46] bg-[#17162a] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.16)]">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-lg font-semibold text-[#c2bfd0]">Total receivable</p>
-                  <p className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">{formatCurrency(stats.receivable)}</p>
-                  <p className="mt-1 text-base text-[#a9a6bb]">Balances owed to you</p>
-                </div>
-                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#3b2d1d] text-lg font-semibold text-[#ffd49b]">
-                  ↗
-                </span>
-              </div>
-            </article>
-
-            <article className="rounded-2xl border border-[#302d46] bg-[#17162a] p-5 shadow-[0_8px_30px_rgba(0,0,0,0.16)]">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-lg font-semibold text-[#c2bfd0]">Total payable</p>
-                  <p className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">{formatCurrency(stats.payable)}</p>
-                  <p className="mt-1 text-base text-[#a9a6bb]">Balances you owe</p>
-                </div>
-                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#1d3b32] text-lg font-semibold text-[#a8efd3]">
-                  ↙
-                </span>
-              </div>
-            </article>
-          </section>
-
-          <section className="overflow-hidden rounded-[1.6rem] border border-[#302d46] bg-[#17162a] shadow-[0_8px_30px_rgba(0,0,0,0.16)]">
-            <div className="border-b border-[#302d46] px-5 py-5 sm:px-6">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                  <h2 className="text-xl font-semibold tracking-tight">Your parties</h2>
-                  <p className="mt-1 text-lg text-[#a9a6bb]">
-                    {filteredParties.length} {filteredParties.length === 1 ? 'record' : 'records'}
-                    {search ? ` matching “${search}”` : ''}
-                  </p>
-                </div>
-
-                <label className="flex w-full items-center gap-2.5 rounded-xl border border-[#3b3752] bg-[#201e36] px-3.5 py-3 text-lg text-[#c2bfd0] transition focus-within:border-[#9c85ff] focus-within:bg-[#24213e] focus-within:ring-4 focus-within:ring-[#7257ff]/20 lg:max-w-[360px]">
-                  <span aria-hidden="true" className="text-lg">⌕</span>
-                  <input
-                    type="search"
-                    value={search}
-                    onChange={(event) => setSearch(event.target.value)}
-                    placeholder="Search name, phone or GSTIN"
-                    aria-label="Search parties"
-                    className="min-w-0 flex-1 bg-transparent text-lg text-white outline-none placeholder:text-[#aaa6bb]"
-                  />
-                </label>
-              </div>
-
-              <div className="mt-5 flex gap-2 overflow-x-auto pb-1">
-                {partyTypes.map((type) => {
-                  const count =
-                    type.key === 'ALL'
-                      ? parties.length
-                      : parties.filter((party) => party.type === type.key).length
-
-                  return (
-                    <button
-                      key={type.key}
-                      type="button"
-                      onClick={() => setTab(type.key)}
-                      aria-pressed={tab === type.key}
-                      className={`inline-flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-base font-semibold transition ${
-                        tab === type.key
-                          ? 'bg-[#7257ff] text-white shadow-[0_6px_18px_rgba(114,87,255,0.2)]'
-                          : 'bg-[#24213e] text-[#c2bfd0] hover:bg-[#302b50] hover:text-[#d0c7ff]'
-                      }`}
-                    >
-                      {type.label}
-                      <span className={tab === type.key ? 'text-white/80' : 'text-[#a9a6bb]'}>
-                        {count}
-                      </span>
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-
-            {filteredParties.length > 0 ? (
-              <>
-                <div className="hidden overflow-x-auto md:block">
-                  <table className="w-full min-w-[780px] text-left">
-                    <thead>
-                      <tr className="bg-[#201e36] text-sm font-bold uppercase tracking-[0.12em] text-[#c2bfd0]">
-                        <th className="px-6 py-3.5">Party</th>
-                        <th className="px-4 py-3.5">Category</th>
-                        <th className="px-4 py-3.5">Contact</th>
-                        <th className="px-4 py-3.5">Balance</th>
-                        <th className="px-5 py-3.5 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-[#302d46]">
-                      {filteredParties.map((party) => (
-                        <tr key={party.id} className="transition hover:bg-white/[0.03]">
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-3">
-                              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#302b50] text-base font-bold text-[#c9bdff]">
-                                {getInitials(party.name)}
-                              </span>
-                              <div className="min-w-0">
-                                <p className="max-w-[260px] truncate text-lg font-semibold text-white">
-                                  {party.name}
-                                </p>
-                                <p className="mt-0.5 text-base text-[#a9a6bb]">
-                                  GSTIN {party.gstin}
-                                </p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-4 py-4">
-                            <span className={`rounded-full px-3 py-1.5 text-sm font-bold ${typeStyles[party.type]}`}>
-                              {party.type.charAt(0) + party.type.slice(1).toLowerCase()}
-                            </span>
-                          </td>
-                          <td className="px-4 py-4 text-lg text-[#c2bfd0]">{party.phone}</td>
-                          <td className="px-4 py-4">{renderBalance(party)}</td>
-                          <td className="px-5 py-4">
-                            <div className="flex justify-end">{renderActions(party)}</div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                <div className="space-y-3 p-4 md:hidden">
-                  {filteredParties.map((party) => (
-                    <article key={party.id} className="rounded-2xl border border-[#302d46] bg-[#1b1930] p-4">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex min-w-0 items-center gap-3">
-                          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#302b50] text-base font-bold text-[#c9bdff]">
-                            {getInitials(party.name)}
-                          </span>
-                          <div className="min-w-0">
-                            <p className="truncate text-lg font-semibold text-white">{party.name}</p>
-                            <p className="mt-1 text-base text-[#c2bfd0]">{party.phone}</p>
-                          </div>
-                        </div>
-                        <span className={`shrink-0 rounded-full px-3 py-1.5 text-sm font-bold ${typeStyles[party.type]}`}>
-                          {party.type.charAt(0) + party.type.slice(1).toLowerCase()}
-                        </span>
-                      </div>
-                      <div className="mt-4 flex items-end justify-between border-t border-[#302d46] pt-3">
-                        {renderBalance(party)}
-                        {renderActions(party)}
-                      </div>
-                    </article>
+          {loading ? (
+            <div className="px-6 py-16 text-center text-sm text-slate-500">Loading customers…</div>
+          ) : loadError ? (
+            <div role="alert" className="px-6 py-12 text-center"><p className="font-semibold text-red-600">{loadError}</p><button type="button" onClick={loadCustomers} className="mt-3 text-sm font-bold text-[#159A8A]">Try again</button></div>
+          ) : filtered.length ? (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[820px] text-left text-sm">
+                <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500"><tr><th className="px-5 py-3">Customer</th><th className="px-4 py-3">Category</th><th className="px-4 py-3">Contact</th><th className="px-4 py-3">Outstanding</th><th className="px-4 py-3">Last transaction</th><th className="px-5 py-3 text-right">Actions</th></tr></thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filtered.map((customer) => (
+                    <tr key={customer._id} className="hover:bg-slate-50">
+                      <td className="px-5 py-4"><button type="button" onClick={() => openProfile(customer)} className="flex items-center gap-3 text-left"><span className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-[#172B4D]">{initials(customer.name)}</span><span><span className="block font-bold text-[#172B4D]">{customer.name}</span><span className="mt-0.5 block max-w-48 truncate text-xs text-slate-400">{customer.address}</span></span></button></td>
+                      <td className="px-4 py-4"><span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-600">{customer.category}</span></td>
+                      <td className="px-4 py-4 text-slate-600">{customer.phone}</td>
+                      <td className="px-4 py-4"><p className={`font-bold ${customer.outstandingPaise ? 'text-red-600' : 'text-green-700'}`}>{money(customer.outstandingPaise)}</p><p className="mt-0.5 text-xs text-slate-400">Limit {money(customer.creditLimitPaise)}</p></td>
+                      <td className="px-4 py-4 text-slate-600">{customer.updatedAt?.slice(0, 10) || '—'}</td>
+                      <td className="px-5 py-4"><div className="flex justify-end gap-1"><button type="button" onClick={() => setToast(`Reminder prepared for ${customer.name}. Sending is not configured.`)} className="rounded-lg p-2 text-slate-500 hover:bg-[#E9F5F3] hover:text-[#159A8A]" aria-label={`Prepare reminder for ${customer.name}`}><BellRing size={16} /></button><button type="button" onClick={() => openEdit(customer)} className="rounded-lg p-2 text-slate-500 hover:bg-slate-100" aria-label={`Edit ${customer.name}`}><Pencil size={16} /></button><button type="button" onClick={() => exportStatement(customer)} className="rounded-lg p-2 text-slate-500 hover:bg-slate-100" aria-label={`Export statement for ${customer.name}`}><Download size={16} /></button><button type="button" onClick={() => deleteCustomer(customer)} className="rounded-lg p-2 text-slate-500 hover:bg-red-50 hover:text-red-600" aria-label={`Delete ${customer.name}`}><Trash2 size={16} /></button></div></td>
+                    </tr>
                   ))}
-                </div>
-              </>
-            ) : (
-              <div className="px-6 py-16 text-center">
-                <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#302b50] text-xl text-[#c9bdff]">
-                  ⌕
-                </span>
-                <h3 className="mt-4 text-lg font-semibold text-white">No parties found</h3>
-                <p className="mx-auto mt-1 max-w-sm text-lg leading-7 text-[#c2bfd0]">
-                  Try a different search or clear the filters to see all your parties.
-                </p>
-                <button
-                  type="button"
-                  onClick={clearFilters}
-                  className="mt-4 rounded-lg px-3 py-2 text-base font-semibold text-[#c9bdff] transition hover:bg-white/10"
-                >
-                  Clear filters
-                </button>
-              </div>
-            )}
-
-            {filteredParties.length > 0 && (
-              <div className="border-t border-[#302d46] px-5 py-3.5 text-base text-[#c2bfd0] sm:px-6">
-                Showing {filteredParties.length} of {parties.length} parties
-              </div>
-            )}
-          </section>
-        </main>
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="px-6 py-16 text-center"><p className="font-bold text-[#172B4D]">No customers found</p><button type="button" onClick={() => { setSearch(''); setCategory('All') }} className="mt-2 text-sm font-bold text-[#159A8A]">Clear filters</button></div>
+          )}
+        </section>
       </div>
 
-      <AnimatePresence>
-        {toast && (
-          <motion.div
-            role="status"
-            aria-live="polite"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 12 }}
-            className="fixed bottom-5 left-1/2 z-[100] -translate-x-1/2 rounded-xl border border-white/10 bg-[#201d3b] px-4 py-3 text-base font-medium text-white shadow-[0_16px_40px_rgba(25,23,43,0.24)]"
-          >
-            {toast}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {dialog && (
+        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-slate-950/40 p-4" onMouseDown={(event) => event.target === event.currentTarget && setDialog(null)}>
+          <form onSubmit={saveParty} className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
+            <div className="flex items-center justify-between"><h2 className="text-lg font-bold text-[#172B4D]">{dialog.id ? 'Edit customer' : 'Add customer'}</h2><button type="button" onClick={() => setDialog(null)} className="rounded-lg p-2 text-slate-400"><X size={18} /></button></div>
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              <label className="sm:col-span-2 text-sm font-semibold text-slate-700">Name<input required value={dialog.name} onChange={(event) => setDialog({ ...dialog, name: event.target.value })} className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 font-normal" /></label>
+              <label className="text-sm font-semibold text-slate-700">Mobile number<input required value={dialog.phone} onChange={(event) => setDialog({ ...dialog, phone: event.target.value })} className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 font-normal" /></label>
+              <label className="text-sm font-semibold text-slate-700">Category<select value={dialog.category} onChange={(event) => setDialog({ ...dialog, category: event.target.value })} className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 font-normal"><option>Regular</option><option>Retail</option><option>Wholesale</option></select></label>
+              <label className="sm:col-span-2 text-sm font-semibold text-slate-700">Address<textarea rows="2" value={dialog.address} onChange={(event) => setDialog({ ...dialog, address: event.target.value })} className="mt-1.5 w-full resize-none rounded-lg border border-slate-200 px-3 py-2.5 font-normal" /></label>
+              <label className="text-sm font-semibold text-slate-700">Credit limit<input type="number" min="0" step="0.01" value={dialog.creditLimit} onChange={(event) => setDialog({ ...dialog, creditLimit: event.target.value })} className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 font-normal" /></label>
+              {!dialog.id && <label className="text-sm font-semibold text-slate-700">Opening balance<input type="number" min="0" step="0.01" value={dialog.balance || ''} onChange={(event) => setDialog({ ...dialog, balance: event.target.value })} className="mt-1.5 w-full rounded-lg border border-slate-200 px-3 py-2.5 font-normal" /></label>}
+            </div>
+            <div className="mt-6 flex justify-end gap-2"><button type="button" onClick={() => setDialog(null)} className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-bold text-slate-700">Cancel</button><button type="submit" className="rounded-lg bg-[#172B4D] px-4 py-2 text-sm font-bold text-white">{dialog.id ? 'Save changes' : 'Add customer'}</button></div>
+          </form>
+        </div>
+      )}
 
-      <AnimatePresence>
-        {showModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onMouseDown={(event) => {
-              if (event.target === event.currentTarget) setShowModal(false)
-            }}
-            className="fixed inset-0 z-[90] flex items-center justify-center overflow-y-auto bg-black/70 p-4 backdrop-blur-sm"
-          >
-            <motion.section
-              role="dialog"
-              aria-modal="true"
-              aria-labelledby="party-form-title"
-              initial={{ opacity: 0, y: 16, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 12, scale: 0.98 }}
-              className="my-auto w-full max-w-lg overflow-hidden rounded-[1.6rem] border border-[#39354f] bg-[#17162a] shadow-[0_28px_90px_rgba(0,0,0,0.5)]"
-            >
-              <div className="flex items-start justify-between border-b border-[#302d46] px-6 py-5">
-                <div>
-                  <p className="text-sm font-bold uppercase tracking-[0.16em] text-[#7257ff]">
-                    Party details
-                  </p>
-                  <h2 id="party-form-title" className="mt-1 text-2xl font-semibold tracking-tight text-white">
-                    {editing ? 'Edit party' : 'Add a party'}
-                  </h2>
-                  <p className="mt-1 text-lg text-[#c2bfd0]">
-                    Keep the important account details in one place.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  aria-label="Close form"
-                  className="flex h-9 w-9 items-center justify-center rounded-xl text-xl text-[#c2bfd0] transition hover:bg-white/10 hover:text-white"
-                >
-                  ×
-                </button>
-              </div>
-
-              <form onSubmit={saveParty} className="space-y-4 p-6">
-                <label className="block">
-                  <span className="mb-1.5 block text-base font-semibold text-[#e2dfeb]">
-                    Party name <span className="text-[#c44761]">*</span>
-                  </span>
-                  <input
-                    autoFocus
-                    required
-                    value={form.name}
-                    onChange={(event) => setForm({ ...form, name: event.target.value })}
-                    placeholder="e.g. Mohan Stores"
-                    className="w-full rounded-xl border border-[#3b3752] bg-[#201e36] px-3.5 py-3 text-lg text-white outline-none transition placeholder:text-[#a9a6bb] focus:border-[#9c85ff] focus:bg-[#24213e] focus:ring-4 focus:ring-[#7257ff]/20"
-                  />
-                </label>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="block">
-                    <span className="mb-1.5 block text-base font-semibold text-[#e2dfeb]">Category</span>
-                    <select
-                      value={form.type}
-                      onChange={(event) => setForm({ ...form, type: event.target.value })}
-                      className="w-full rounded-xl border border-[#3b3752] bg-[#201e36] px-3.5 py-3 text-lg text-white outline-none transition focus:border-[#9c85ff] focus:bg-[#24213e] focus:ring-4 focus:ring-[#7257ff]/20"
-                    >
-                      {partyTypes.slice(1).map((type) => (
-                        <option key={type.key} value={type.key}>{type.label.slice(0, -1)}</option>
-                      ))}
-                    </select>
-                  </label>
-
-                  <label className="block">
-                    <span className="mb-1.5 block text-base font-semibold text-[#e2dfeb]">Phone number</span>
-                    <input
-                      type="tel"
-                      value={form.phone}
-                      onChange={(event) => setForm({ ...form, phone: event.target.value })}
-                      placeholder="Optional"
-                      className="w-full rounded-xl border border-[#3b3752] bg-[#201e36] px-3.5 py-3 text-lg text-white outline-none transition placeholder:text-[#a9a6bb] focus:border-[#9c85ff] focus:bg-[#24213e] focus:ring-4 focus:ring-[#7257ff]/20"
-                    />
-                  </label>
-                </div>
-
-                <label className="block">
-                  <span className="mb-1.5 block text-base font-semibold text-[#e2dfeb]">GSTIN / UPI reference</span>
-                  <input
-                    value={form.gstin === '-' ? '' : form.gstin}
-                    onChange={(event) => setForm({ ...form, gstin: event.target.value })}
-                    placeholder="Optional"
-                    className="w-full rounded-xl border border-[#3b3752] bg-[#201e36] px-3.5 py-3 text-lg text-white outline-none transition placeholder:text-[#a9a6bb] focus:border-[#9c85ff] focus:bg-[#24213e] focus:ring-4 focus:ring-[#7257ff]/20"
-                  />
-                </label>
-
-                <label className="block">
-                  <span className="mb-1.5 block text-base font-semibold text-[#e2dfeb]">Opening balance</span>
-                  <div className="relative">
-                    <span className="absolute inset-y-0 left-3.5 flex items-center text-lg text-[#c2bfd0]">₹</span>
-                    <input
-                      type="number"
-                      step="0.01"
-                      value={form.balance}
-                      onChange={(event) => setForm({ ...form, balance: event.target.value })}
-                      placeholder="0.00"
-                      className="w-full rounded-xl border border-[#3b3752] bg-[#201e36] py-3 pl-8 pr-3.5 text-lg text-white outline-none transition placeholder:text-[#a9a6bb] focus:border-[#9c85ff] focus:bg-[#24213e] focus:ring-4 focus:ring-[#7257ff]/20"
-                    />
-                  </div>
-                  <span className="mt-1.5 block text-base text-[#c2bfd0]">
-                    Positive means owed to you; negative means you owe them.
-                  </span>
-                </label>
-
-                <div className="flex flex-col-reverse gap-2 border-t border-[#302d46] pt-4 sm:flex-row sm:justify-end">
-                  <button
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                    className="rounded-xl border border-[#3b3752] px-4 py-2.5 text-lg font-semibold text-[#c2bfd0] transition hover:bg-white/10"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="rounded-xl bg-[#7257ff] px-5 py-2.5 text-lg font-bold text-white shadow-[0_8px_20px_rgba(114,87,255,0.2)] transition hover:-translate-y-0.5 hover:bg-[#5f43ec]"
-                  >
-                    {editing ? 'Save changes' : 'Add party'}
-                  </button>
-                </div>
-              </form>
-            </motion.section>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+      {profile && (
+        <div className="fixed inset-0 z-[85] flex justify-end bg-slate-950/30" onMouseDown={(event) => event.target === event.currentTarget && setProfile(null)}>
+          <aside className="h-full w-full max-w-md overflow-y-auto bg-white p-6 shadow-2xl">
+            <div className="flex items-start justify-between"><div className="flex items-center gap-3"><span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#E9F5F3] text-sm font-bold text-[#159A8A]">{initials(profile.name)}</span><div><h2 className="font-bold text-[#172B4D]">{profile.name}</h2><p className="mt-1 text-sm text-slate-500">{profile.category} customer</p></div></div><button type="button" onClick={() => setProfile(null)} className="rounded-lg p-2 text-slate-400"><X size={18} /></button></div>
+            <div className="mt-6 rounded-xl border border-slate-200 p-4"><p className="text-xs font-bold uppercase tracking-wide text-slate-400">Outstanding balance</p><p className="mt-2 text-2xl font-bold text-red-600">{money(profile.outstandingPaise)}</p><p className="mt-2 text-xs text-slate-500">Credit limit {money(profile.creditLimitPaise)}</p></div>
+            <dl className="mt-5 space-y-4 text-sm"><div><dt className="text-slate-400">Phone</dt><dd className="mt-1 font-semibold text-slate-700">{profile.phone}</dd></div><div><dt className="text-slate-400">Address</dt><dd className="mt-1 font-semibold text-slate-700">{profile.address || '—'}</dd></div></dl>
+            <div className="mt-6 flex items-center justify-between"><h3 className="font-bold text-[#172B4D]">Khata ledger</h3><button type="button" onClick={() => exportStatement(profile)} className="text-xs font-bold text-[#159A8A]">Export CSV</button></div>
+            {ledgerLoading ? <p className="mt-3 text-sm text-slate-500">Loading ledger…</p> : ledger.length ? <div className="mt-3 divide-y divide-slate-100">{ledger.map((entry) => <div key={entry._id} className="py-3"><div className="flex justify-between gap-3"><p className="font-semibold text-slate-700">{entry.type}</p><p className="font-bold text-[#172B4D]">{money(entry.amountPaise)}</p></div><p className="mt-1 text-xs text-slate-500">{entry.transactionDate?.slice(0, 10)} · {entry.reference}</p></div>)}</div> : <p className="mt-3 text-sm text-slate-500">No ledger activity yet.</p>}
+            <button type="button" onClick={() => setToast(`Reminder prepared for ${profile.name}. Sending is not configured.`)} className="mt-5 w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-bold text-slate-700">Prepare payment reminder</button>
+          </aside>
+        </div>
+      )}
+      <Toast message={toast} />
+    </AppLayout>
   )
 }
-
-export default Customers

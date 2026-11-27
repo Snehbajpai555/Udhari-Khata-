@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { ensureTransactionIndexes } from "../utils/ensureTransactionIndexes.js";
 
 const connectDB = async () => {
   const mongoUri = process.env.MONGODB_URI;
@@ -7,6 +8,7 @@ const connectDB = async () => {
   }
 
   await mongoose.connect(mongoUri);
+  await ensureTransactionIndexes();
   console.log("MongoDB connected successfully.");
 };
 

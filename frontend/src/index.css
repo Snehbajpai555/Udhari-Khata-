@@ -2,9 +2,13 @@
 
 @theme {
   --font-sans: "Inter", "Segoe UI", sans-serif;
-  --color-brand-purple: #7257ff;
-  --color-brand-ink: #111023;
-  --color-brand-lime: #c9ff63;
+  --color-brand-navy: #172b4d;
+  --color-brand-teal: #159a8a;
+  --color-brand-background: #f7f8fa;
+  --color-brand-text: #1f2937;
+  --color-brand-border: #e2e8f0;
+  --color-status-negative: #dc2626;
+  --color-status-positive: #15803d;
 }
 
 html {
@@ -17,17 +21,17 @@ body {
   font-family: "Inter", "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  background: #0c0b18;
-  color-scheme: dark;
+  background: #f7f8fa;
+  color: #1f2937;
 }
 
 ::selection {
-  background: #493c80;
+  background: #bfe9e3;
   color: #ffffff;
 }
 
 :focus-visible {
-  outline: 2px solid #7257ff;
+  outline: 2px solid #159a8a;
   outline-offset: 3px;
 }
 
